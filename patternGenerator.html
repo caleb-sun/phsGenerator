@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shape Template Builder</title>
+<link rel="icon" type="image/x-icon" href="favicon.png">
+
+<link rel="stylesheet" href="patternGenerator.css">
+<script src="opentype.min.js"></script>
+</head>
+<body>
+<!-- 
+<header>
+    <img src="PHS-Bloom.svg" alt="Company Logo" width="auto" height="36px">
+  <h1>Shape Template Builder</h1>
+  <span class="subtitle">— PHSFloralSymbols</span>
+</header> -->
+
+<!-- Glyph sidebar -->
+<section id="glyph-panel">
+    <div id="glyph-panel-header">
+        <!-- <img src="PHS-Bloom.svg" alt="Company Logo" width="auto" height="36px"> -->
+        <h1>PHS Pattern Builder</h1>
+        <sub>A Tool by Smith & Diction</sub>
+    </div>
+  <div id="container">
+    <h2 style="padding-top: 24px;">Glyphs</h2>
+
+    <div id="glyph-grid">
+      <div id="loading-msg">Loading font…</div>
+    </div>
+    <button id="randomize-btn">Randomize</button>
+  </div>
+  
+ 
+  <div id="phs-logo" style="margin-top: auto;">
+    <img src="PHS-Bloom.svg" alt="Company Logo" width="auto" height="auto">
+  </div>
+    
+
+</section>
+
+<!-- Preview -->
+<main id="preview-area">
+  <div id="preview-wrapper">
+    <div id="no-glyph">Select a glyph to begin</div>
+  </div>
+  <span id="preview-hint"></span>
+</main>
+
+<!-- Controls -->
+<aside id="controls">
+
+  <div class="ctrl-section">
+    <h3>Canvas Size</h3>
+    <label class="ctrl-label">Aspect ratio</label>
+    <select id="aspect-ratio">
+      <option value="1:1">1:1 — Square</option>
+      <option value="4:3">4:3 — Standard</option>
+      <option value="3:2">3:2 — Classic</option>
+      <option value="16:9">16:9 — Widescreen</option>
+      <option value="9:16" selected>9:16 — Portrait / Story</option>
+      <option value="4:5">4:5 — Portrait Post</option>
+      <option value="2:3">2:3 — Portrait</option>
+      <option value="3:4">3:4 — Portrait</option>
+      <option value="A4">A4 — 210×297mm</option>
+      <option value="Letter">Letter — 8.5×11in</option>
+      <option value="custom">Custom…</option>
+    </select>
+    <div id="custom-dims">
+      <input type="number" id="custom-w" placeholder="W" min="10" max="8000" value="800">
+      <span>×</span>
+      <input type="number" id="custom-h" placeholder="H" min="10" max="8000" value="600">
+      <span class="custom-dims-unit">px</span>
+    </div>
+  </div>
+
+  <div class="ctrl-section">
+    <h3>Glyph Scale</h3>
+    <div class="slider-row">
+      <input type="range" id="scale-slider" min="200" max="400" value="200" step="1">
+      <span id="scale-val">200%</span>
+    </div>
+    <label class="ctrl-label ctrl-label--hint">
+      100% = minimum cover size
+    </label>
+  </div>
+
+  <div class="ctrl-section">
+    <h3>Position</h3>
+    <div id="pos-grid">
+      <button class="pos-btn" data-pos="top-left">•</button>
+      <button class="pos-btn" data-pos="top">•</button>
+      <button class="pos-btn" data-pos="top-right">•</button>
+      <button class="pos-btn" data-pos="left">•</button>
+      <button class="pos-btn selected" data-pos="center">•</button>
+      <button class="pos-btn" data-pos="right">•</button>
+      <button class="pos-btn" data-pos="bottom-left">•</button>
+      <button class="pos-btn" data-pos="bottom">•</button>
+      <button class="pos-btn" data-pos="bottom-right">•</button>
+    </div>
+  </div>
+
+  <div class="ctrl-section">
+    <h3>Rotation</h3>
+    <div class="slider-row">
+      <input type="range" id="rotation-slider" min="0" max="359" value="0" step="1">
+      <span id="rotation-val">0°</span>
+    </div>
+  </div>
+
+  <div class="ctrl-section">
+    <div class="section-header">
+      <h3>Color Scheme</h3>
+      <button id="swap-colors" title="Swap background and foreground colors">⇄</button>
+    </div>
+    <div id="scheme-grid"></div>
+  </div>
+
+  <div class="ctrl-section">
+    <h3>Texture</h3>
+    <select id="texture-select">
+      <option value="">None</option>
+      <option value="Grain-FilmTextures-01.jpg">Film Grain 01</option>
+      <option value="Grain-FilmTextures-02.jpg">Film Grain 02</option>
+      <option value="Grain-FilmTextures-03.jpg">Film Grain 03</option>
+      <option value="Grain-FilmTextures-04.jpg">Film Grain 04</option>
+      <option value="Grain-FilmTextures-05.jpg">Film Grain 05</option>
+      <option value="Grain-FilmTextures-06.jpg">Film Grain 06</option>
+      <option value="Grain-FilmTextures-07.jpg">Film Grain 07</option>
+      <option value="Grain-FilmTextures-08.jpg">Film Grain 08</option>
+      <option value="Grain-FilmTextures-09.jpg">Film Grain 09</option>
+      <option value="Grain-FilmTextures-10.jpg">Film Grain 10</option>
+      <option value="Grain-FilmTextures-11.jpg">Film Grain 11</option>
+      <option value="Grain-FilmTextures-12.jpg">Film Grain 12</option>
+      <option value="Grain-FilmTextures-13.jpg">Film Grain 13</option>
+    </select>
+  </div>
+
+  <div class="ctrl-section">
+    <h3>Export</h3>
+    <div class="export-btns">
+      <button class="export-btn svg" id="export-svg">SVG</button>
+      <button class="export-btn png" id="export-png">PNG</button>
+    </div>
+    <label class="ctrl-label ctrl-label--spaced">PNG resolution</label>
+    <select id="png-scale">
+      <option value="1">1× (canvas size)</option>
+      <option value="2" selected>2× (retina)</option>
+      <option value="3">3× (print)</option>
+    </select>
+  </div>
+
+</aside>
+
+<script>
+const FONT_FAMILY = 'PHSFloralSymbols';
+
+// ─── State ─────────────────────────────────────────────────────────────────
+const state = {
+  glyphs: [],
+  selectedGlyph: null,
+  canvasW: 1080,
+  canvasH: 1920,
+  scale: 2.0,
+  position: 'center',
+  rotation: 0,
+  texture: null,
+  colorBg: '#1f5c36',
+  colorFg: '#7fe89c',
+};
+
+// ─── Color Schemes ──────────────────────────────────────────────────────────
+const SCHEMES = [
+  { section: 'Primary Brand Patterns',    name: 'Forest',     bg: '#A4F8E9', fg: '#4BE471' },
+  {                                       name: 'Terracotta', bg: '#2AD5C7', fg: '#015128' },
+  {                                       name: 'Navy',       bg: '#015128', fg: '#A4F8E9' },
+  {                                       name: 'Navy',       bg: '#03474D', fg: '#CFFFB4' },
+
+  { section: ' ',                         name: 'Navy',       bg: '#FCEEDC', fg: '#2AD5C7' },
+  {                                       name: 'Navy',       bg: '#FCEEDC', fg: '#4BE471' },
+
+  { section: 'Vibrant',                   name: 'Terracotta', bg: '#EFCEFD', fg: '#4BE471' },
+  {                                       name: 'Night',      bg: '#FF5A68', fg: '#EFCEFD' },
+  {                                       name: 'Navy',       bg: '#EFCEFD', fg: '#FE8710' },
+  {                                       name: 'Navy',       bg: '#015128', fg: '#CB67D0' },
+
+  { section: 'Monochrome',                name: 'Sprout-New Leaf', bg: '#4BE471', fg: '#CFFFB4' },
+  {                                       name: 'New Leaf-Ivy',      bg: '#015128', fg: '#4BE471' },
+  {                                       name: 'Sprout-Ivy',      bg: '#CFFFB4', fg: '#015128' },
+
+  { section: ' ',                         name: 'Aster-Lilac',      bg: '#CB67D0', fg: '#EFCEFD' },
+  {                                       name: 'Aster-Beet',      bg: '#8A245C', fg: '#CB67D0' },
+  {                                       name: 'Lilac-Beet',       bg: '#EFCEFD', fg: '#8A245C' },
+
+  { section: ' ',                         name: 'aquamarine-ultramarine',      bg: '#2AD5C7', fg: '#A4F8E9' },
+  {                                       name: 'ultramarine–fountain blue',       bg: '#03474D', fg: '#2AD5C7' },
+  {                                       name: 'Fountain blue-aquamarine',       bg: '#A4F8E9', fg: '#03474D' },
+
+  { section: ' ',                         name: 'buttercup-tigerlily',      bg: '#FBA53C', fg: '#FDE18C' },
+  {                                       name: 'ultramarine–fountain blue',       bg: '#FE8710', fg: '#FBA53C' },
+  {                                       name: 'Fountain blue-aquamarine',       bg: '#FDE18C', fg: '#FE8710' },
+
+  { section: 'Printerly',                 name: 'Sprout', bg: '#FCEEDC', fg: '#CFFFB4' },
+  {                                       name: 'Lilac',      bg: '#FCEEDC', fg: '#EFCEFD' },
+  {                                       name: 'Aquamarine',       bg: '#FCEEDC', fg: '#A4F8E9' },
+  {                                       name: 'Buttercup',       bg: '#FCEEDC', fg: '#FDE18C' },
+  {                                       name: 'Wild Rose',       bg: '#FCEEDC', fg: '#FCCFE8' },
+
+
+];
+
+// ─── Textures ────────────────────────────────────────────────────────────────
+const TEXTURES = Array.from({length: 13}, (_, i) =>
+  `Grain-FilmTextures-${String(i + 1).padStart(2, '0')}.jpg`
+);
+const textureImgCache = {};
+const textureDataURICache = {};
+const textureLoadPromises = {};
+
+// Returns a promise that resolves once textureDataURICache[filename] is populated
+// (or resolves to null if the fetch failed, e.g. blocked under file://).
+function preloadTexture(filename) {
+  if (!filename) return Promise.resolve(null);
+  if (textureLoadPromises[filename]) return textureLoadPromises[filename];
+
+  const img = new Image();
+  img.src = `textures/${filename}`;
+  textureImgCache[filename] = img;
+
+  // XHR → Blob → data URI so the texture can be drawn to canvas without tainting it
+  const promise = new Promise(resolve => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `textures/${filename}`, true);
+    xhr.responseType = 'blob';
+    xhr.onload = () => {
+      if (!xhr.response) { resolve(null); return; }
+      const reader = new FileReader();
+      reader.onload = e => {
+        textureDataURICache[filename] = e.target.result;
+        resolve(e.target.result);
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(xhr.response);
+    };
+    xhr.onerror = () => resolve(null);
+    try { xhr.send(); } catch (e) { resolve(null); }
+  });
+
+  textureLoadPromises[filename] = promise;
+  return promise;
+}
+
+function getTextureDataURI(filename) {
+  if (textureDataURICache[filename]) return textureDataURICache[filename];
+  const img = textureImgCache[filename];
+  if (!img || !img.complete || !img.naturalWidth) return null;
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  c.getContext('2d').drawImage(img, 0, 0);
+  try { return c.toDataURL('image/jpeg', 0.85); } catch (e) { return null; }
+}
+
+// ─── opentype.js font (used to outline glyphs for SVG export) ───────────────
+let opentypeFont = null;
+// Font embedded as base64 so opentype.parse() works without any fetch/XHR (file:// safe)
+const FONT_B64 = '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z3qKZIhtj3x9iIiHhIaMCIeIkY6JH4ePiI2GjX2Sg4l8jn2Odo9+hIWIiIaKhIl/in+Jf4ptg4x3d19fjH+QgwiTga11oo0ImgaQjI6KhhqMhIhxmW6PgpSAlYmUiZeQk46jlRiJcIJxfHSHhIWEhoWEmFHMVpiFjYSLhoh0fF9aiIeEhIWFjIAIiYyJiokeiYqIiYmIiYyIG3qOR2R6gIKGgoWIgomEjYOOhJRxpDycgQiHkJONkhuPj4qHjB+JiomJiR6KiomKiYqChoWBioEIho44jXEeg4yDkYUek4SWjJaMp47yhZ2tjpGQkpOHjYqNiYyJk3ubhJqGmYbyib2KCJ6anJ2HH3nxiJyImXuTGYiNiIyIjIqMi4yKjAiKjYqMjRqMjo2OjYwIQfgqFYWNh4OFiYiJiY+MjgiPjpGJjh6HjoWHh4wIiIaMj40fjY6Pjo+NCI2MjYyOGoyQgo6NkAiOjpCKjxuUjISWjZGMko6QkIOOh4uDkYqSio6XkooIjomJhIcaioaPiJCMlI2XjH+AiIiFiYqHioSSiY+IjYmPiYqHCIqKi4oehYqGjIaNh42GioyFCIeLfYSQHoeOipKGjQhD/AQViYiIiYiKhoiCjImFiYOViI6FCI2IjYeGGouLiooegoiBkYOQCIaNhoaFGoqGiYeHh4mJio2JjIiOiY6KjoqQh5CFiQiKiYmKih+ChYGFgBuIjY6NH42Sj5OQkI2NjI+KjYqQh46GioWMg42Gj4yNGI+Rk46RjZGOjZOHkIaQhJKJk5OOlYiSh42KjIuMigiSipKRkhqRB5KMko+SHoyMi4yKHpSEj4CAGoePiJCMHo+OjpCQjY+MkI6PioyKGIaJhIiHHoqIiYmKhwiGio+EkRuSipGJkYaMiomKiooIfvj8FaSBlIaTiZOEGZZ/lHechpSJlJGTkJWRlJKVj5iRmomajgifj5WOpBqihJWEmh6Ik4yTjpOOlI6Yj5eNlI+YhJN9l16Feod7h3uLfJB5j12Rfn5+e5xuhnoIiYSIhoiGhoOHf4aBCImHiIaGGomCloeThwjhsBWOjIyOio0IjYmGkZAbjI6Nio0bkI2HkY8ajYyLj44bjYmNiIyJCIiNiY0ekIqNk4+KCI6JiYeJGoqHjoiPjJaNjIiChImKioqKiYqGkomOh4yKjYmIioeKho2IjIqMiYuK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';
+
+
+// ─── DOM refs ───────────────────────────────────────────────────────────────
+const glyphGrid    = document.getElementById('glyph-grid');
+const previewWrap  = document.getElementById('preview-wrapper');
+const aspectSelect = document.getElementById('aspect-ratio');
+const customDims   = document.getElementById('custom-dims');
+const customW      = document.getElementById('custom-w');
+const customH      = document.getElementById('custom-h');
+const scaleSlider  = document.getElementById('scale-slider');
+const scaleVal     = document.getElementById('scale-val');
+const schemeGrid   = document.getElementById('scheme-grid');
+const posButtons   = document.querySelectorAll('.pos-btn');
+
+// ─── Aspect ratio map ───────────────────────────────────────────────────────
+const ASPECT_PRESETS = {
+  '1:1':    [1080, 1080],
+  '4:3':    [1200, 900],
+  '3:2':    [1200, 800],
+  '16:9':   [1920, 1080],
+  '9:16':   [1080, 1920],
+  '4:5':    [1000, 1250],
+  '2:3':    [800,  1200],
+  '3:4':    [900,  1200],
+  'A4':     [794,  1123],
+  'Letter': [850,  1100],
+};
+
+// ─── Detect which characters have glyphs in the custom font ─────────────────
+// Renders each char twice (with custom font vs. monospace fallback) and
+// compares pixels — a difference means the custom font has that glyph.
+const _scanCanvas = document.createElement('canvas');
+_scanCanvas.width = _scanCanvas.height = 24;
+const _scanCtx = _scanCanvas.getContext('2d');
+
+function hasGlyph(char) {
+  _scanCtx.clearRect(0, 0, 24, 24);
+  _scanCtx.fillStyle = '#fff';
+  _scanCtx.font = `18px "${FONT_FAMILY}", monospace`;
+  _scanCtx.fillText(char, 2, 18);
+  const a = _scanCtx.getImageData(0, 0, 24, 24).data;
+
+  _scanCtx.clearRect(0, 0, 24, 24);
+  _scanCtx.font = '18px monospace';
+  _scanCtx.fillText(char, 2, 18);
+  const b = _scanCtx.getImageData(0, 0, 24, 24).data;
+
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return true;
+  }
+  return false;
+}
+
+// ─── Build glyph grid ───────────────────────────────────────────────────────
+function buildGlyphGrid() {
+  glyphGrid.innerHTML = '';
+  state.glyphs = [];
+
+  const ranges = [
+    [0x21,   0x7E],   // printable ASCII
+  ];
+
+  for (const [start, end] of ranges) {
+    for (let cp = start; cp <= end; cp++) {
+      const char = String.fromCodePoint(cp);
+      if (!hasGlyph(char)) continue;
+
+      const name = `U+${cp.toString(16).toUpperCase().padStart(4, '0')}`;
+      state.glyphs.push({ char, name });
+      const idx = state.glyphs.length - 1;
+
+      const btn = document.createElement('button');
+      btn.className = 'glyph-btn';
+      btn.title = name;
+      btn.textContent = char;
+
+      btn.addEventListener('click', () => selectGlyph(idx, btn));
+      glyphGrid.appendChild(btn);
+    }
+  }
+
+  if (state.glyphs.length === 0) {
+    glyphGrid.innerHTML = '<div id="loading-msg">No glyphs found.</div>';
+    return;
+  }
+
+  const firstBtn = glyphGrid.querySelector('.glyph-btn');
+  if (firstBtn) selectGlyph(0, firstBtn);
+}
+
+// ─── Select glyph ───────────────────────────────────────────────────────────
+function selectGlyph(idx, btn) {
+  glyphGrid.querySelectorAll('.glyph-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.selectedGlyph = state.glyphs[idx];
+  render();
+}
+
+// ─── Render preview ──────────────────────────────────────────────────────────
+function render() {
+  if (!state.selectedGlyph) return;
+  const { canvasW, canvasH, scale, position, rotation, colorBg, colorFg } = state;
+  const svg = buildSVG(canvasW, canvasH, scale, position, colorBg, colorFg, rotation);
+
+  const old = previewWrap.querySelector('svg');
+  const noGlyph = previewWrap.querySelector('#no-glyph');
+  if (old) old.remove();
+  if (noGlyph) noGlyph.remove();
+
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = svg;
+  const svgEl = wrapper.firstElementChild;
+  svgEl.id = 'preview-svg';
+  svgEl.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svgEl.style.maxWidth = '100%';
+  svgEl.style.maxHeight = '100%';
+  previewWrap.appendChild(svgEl);
+
+  document.getElementById('preview-hint').textContent = `${canvasW} × ${canvasH}px`;
+}
+
+// ─── Ink metrics helpers ─────────────────────────────────────────────────────
+// measureText() returns actual ink bounds — independent of canvas size.
+function measureInk(char, fontSize) {
+  _scanCtx.font = `${fontSize}px "${FONT_FAMILY}"`;
+  _scanCtx.textAlign = 'left';
+  _scanCtx.textBaseline = 'alphabetic';
+  const m = _scanCtx.measureText(char);
+  return {
+    left:    m.actualBoundingBoxLeft,    // distance left of x to ink edge
+    right:   m.actualBoundingBoxRight,   // distance right of x to ink edge
+    ascent:  m.actualBoundingBoxAscent,  // distance above baseline to ink top
+    descent: m.actualBoundingBoxDescent, // distance below baseline to ink bottom
+  };
+}
+
+// Returns {x, y} baseline origin so the actual ink aligns to `position`.
+// Use with text-anchor="start" / dominant-baseline="auto" (textAlign="left" / textBaseline="alphabetic").
+function inkPosition(ink, W, H, position) {
+  const x = position.includes('left')   ? ink.left
+           : position.includes('right')  ? W - ink.right
+           : W / 2 - (ink.right - ink.left) / 2;
+
+  const y = position.includes('top')    ? ink.ascent
+           : position.includes('bottom') ? H - ink.descent
+           : H / 2 + (ink.ascent - ink.descent) / 2;
+
+  return { x, y };
+}
+
+// ─── Build SVG string ────────────────────────────────────────────────────────
+function buildSVG(W, H, scaleMultiplier, position, colorBg, colorFg, rotation = 0) {
+  const char = state.selectedGlyph.char;
+  const fontSize = Math.min(W, H) * scaleMultiplier;
+  const ink = measureInk(char, fontSize);
+  const { x, y } = inkPosition(ink, W, H, position);
+  const esc = char.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Rotate around the ink center
+  const cx = (x + (ink.right - ink.left) / 2).toFixed(2);
+  const cy = (y + (ink.descent - ink.ascent) / 2).toFixed(2);
+  const rotAttr = rotation ? ` transform="rotate(${rotation}, ${cx}, ${cy})"` : '';
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+  <defs>
+    <style>@font-face { font-family: '${FONT_FAMILY}'; src: url('PHSFloralSymbols-Regular.otf'); }</style>
+    <clipPath id="rect-clip"><rect width="${W}" height="${H}"/></clipPath>
+  </defs>
+  <g style="isolation:isolate">
+    <rect width="${W}" height="${H}" fill="${colorBg}"/>
+    <g clip-path="url(#rect-clip)">
+      <text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-family="'${FONT_FAMILY}'" font-size="${fontSize}"
+            fill="${colorFg}" text-anchor="start" dominant-baseline="auto"${rotAttr}>${esc}</text>
+    </g>
+    ${state.texture ? `<image href="textures/${state.texture}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice" style="opacity:0.15;mix-blend-mode:plus-darken"/>` : ''}
+  </g>
+</svg>`;
+}
+
+// ─── Build SVG with outlined paths (no font dependency) ──────────────────────
+function buildSVGWithPaths(W, H, scaleMultiplier, position, colorBg, colorFg, rotation = 0) {
+  const char = state.selectedGlyph.char;
+  const fontSize = Math.min(W, H) * scaleMultiplier;
+  const ink = measureInk(char, fontSize);
+  const { x, y } = inkPosition(ink, W, H, position);
+
+  const cx = (x + (ink.right - ink.left) / 2).toFixed(2);
+  const cy = (y + (ink.descent - ink.ascent) / 2).toFixed(2);
+  const rotAttr = rotation ? ` transform="rotate(${rotation}, ${cx}, ${cy})"` : '';
+
+  const pathData = opentypeFont.getPath(char, x, y, fontSize).toPathData(2);
+  const textureDataURI = state.texture ? getTextureDataURI(state.texture) : null;
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+  <defs>
+    <clipPath id="rect-clip"><rect width="${W}" height="${H}"/></clipPath>
+  </defs>
+  <g style="isolation:isolate">
+    <rect width="${W}" height="${H}" fill="${colorBg}"/>
+    <g clip-path="url(#rect-clip)">
+      <path d="${pathData}" fill="${colorFg}"${rotAttr}/>
+    </g>
+    ${textureDataURI ? `<image href="${textureDataURI}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice" style="opacity:0.2;mix-blend-mode:plus-darken"/>` : ''}
+  </g>
+</svg>`;
+}
+
+// ─── Export SVG ──────────────────────────────────────────────────────────────
+document.getElementById('export-svg').addEventListener('click', () => {
+  if (!state.selectedGlyph) return;
+  const { canvasW, canvasH, scale, position, rotation, colorBg, colorFg } = state;
+  const svg = opentypeFont
+    ? buildSVGWithPaths(canvasW, canvasH, scale, position, colorBg, colorFg, rotation)
+    : buildSVG(canvasW, canvasH, scale, position, colorBg, colorFg, rotation);
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `shape-template-${state.selectedGlyph.name}.svg`;
+  a.click();
+});
+
+// ─── Export PNG ──────────────────────────────────────────────────────────────
+async function loadTexturesFromDirectory() {
+  if (!window.showDirectoryPicker) return;
+  try {
+    const dirHandle = await window.showDirectoryPicker({ mode: 'read' });
+    for await (const [name, handle] of dirHandle.entries()) {
+      if (handle.kind !== 'file' || !name.match(/\.(jpe?g|png)$/i)) continue;
+      try {
+        const file = await handle.getFile();
+        const buf = await file.arrayBuffer();
+        const blob = new Blob([buf], { type: file.type || 'image/jpeg' });
+        await new Promise(resolve => {
+          const r = new FileReader();
+          r.onload = e => { textureDataURICache[name] = e.target.result; resolve(); };
+          r.readAsDataURL(blob);
+        });
+      } catch (e) {}
+    }
+  } catch (e) {} // user cancelled
+}
+
+document.getElementById('export-png').addEventListener('click', async () => {
+  if (!state.selectedGlyph) return;
+
+  // Wait for the same-origin fetch to finish caching the texture as a data URI —
+  // this completes automatically when hosted (e.g. GitHub Pages). Only fall back
+  // to asking for folder access if that fetch genuinely failed (e.g. file://).
+  if (state.texture) {
+    await preloadTexture(state.texture);
+  }
+  if (state.texture && !textureDataURICache[state.texture]) {
+    await loadTexturesFromDirectory();
+  }
+
+  const pxScale = parseInt(document.getElementById('png-scale').value);
+  const { canvasW, canvasH, scale, position, colorBg, colorFg } = state;
+  const W2 = canvasW * pxScale;
+  const H2 = canvasH * pxScale;
+  const fontSize = Math.min(W2, H2) * scale;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W2; canvas.height = H2;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = colorBg;
+  ctx.fillRect(0, 0, W2, H2);
+
+  const ink = measureInk(state.selectedGlyph.char, fontSize);
+  const { x, y } = inkPosition(ink, W2, H2, position);
+  ctx.font         = `${fontSize}px "${FONT_FAMILY}"`;
+  ctx.fillStyle    = colorFg;
+  ctx.textAlign    = 'left';
+  ctx.textBaseline = 'alphabetic';
+
+  const rotRad = (state.rotation || 0) * Math.PI / 180;
+  const inkCx = x + (ink.right - ink.left) / 2;
+  const inkCy = y + (ink.descent - ink.ascent) / 2;
+  ctx.save();
+  ctx.translate(inkCx, inkCy);
+  ctx.rotate(rotRad);
+  ctx.translate(-inkCx, -inkCy);
+  ctx.fillText(state.selectedGlyph.char, x, y);
+  ctx.restore();
+
+  if (state.texture) {
+    const dataURI = textureDataURICache[state.texture];
+    if (dataURI) {
+      // data URI doesn't taint the canvas — draw it directly
+      const texImg = new Image();
+      texImg.src = dataURI;
+      await texImg.decode().catch(() => {});
+      ctx.globalAlpha = 0.2;
+      ctx.globalCompositeOperation = 'darken';
+      ctx.drawImage(texImg, 0, 0, W2, H2);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    } else {
+      // XHR not yet ready or blocked — try direct draw and catch taint error
+      const tImg = textureImgCache[state.texture];
+      if (tImg && tImg.complete && tImg.naturalWidth) {
+        ctx.globalAlpha = 0.2;
+        ctx.globalCompositeOperation = 'darken';
+        ctx.drawImage(tImg, 0, 0, W2, H2);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+    }
+  }
+
+  let pngDataURL;
+  try {
+    pngDataURL = canvas.toDataURL('image/png');
+  } catch (e) {
+    // Canvas tainted (Chrome file:// restriction) — re-render without texture
+    const c2 = document.createElement('canvas');
+    c2.width = W2; c2.height = H2;
+    const ctx2 = c2.getContext('2d');
+    ctx2.fillStyle = colorBg;
+    ctx2.fillRect(0, 0, W2, H2);
+    ctx2.font = `${fontSize}px "${FONT_FAMILY}"`;
+    ctx2.fillStyle = colorFg;
+    ctx2.textAlign = 'left';
+    ctx2.textBaseline = 'alphabetic';
+    ctx2.save();
+    ctx2.translate(inkCx, inkCy);
+    ctx2.rotate(rotRad);
+    ctx2.translate(-inkCx, -inkCy);
+    ctx2.fillText(state.selectedGlyph.char, x, y);
+    ctx2.restore();
+    pngDataURL = c2.toDataURL('image/png');
+  }
+
+  const a = document.createElement('a');
+  a.href = pngDataURL;
+  a.download = `shape-template-${state.selectedGlyph.name}@${pxScale}x.png`;
+  a.click();
+});
+
+// ─── Aspect ratio ────────────────────────────────────────────────────────────
+function applyAspect() {
+  const val = aspectSelect.value;
+  if (val === 'custom') {
+    customDims.classList.add('visible');
+    state.canvasW = parseInt(customW.value) || 800;
+    state.canvasH = parseInt(customH.value) || 600;
+  } else {
+    customDims.classList.remove('visible');
+    const [w, h] = ASPECT_PRESETS[val] || [1000, 1000];
+    state.canvasW = w;
+    state.canvasH = h;
+  }
+  render();
+}
+
+aspectSelect.addEventListener('change', applyAspect);
+customW.addEventListener('input', () => { state.canvasW = parseInt(customW.value) || 800; render(); });
+customH.addEventListener('input', () => { state.canvasH = parseInt(customH.value) || 600; render(); });
+
+// ─── Scale slider ────────────────────────────────────────────────────────────
+scaleSlider.addEventListener('input', () => {
+  const pct = parseInt(scaleSlider.value);
+  scaleVal.textContent = pct + '%';
+  state.scale = pct / 100;
+  render();
+});
+
+// ─── Position ────────────────────────────────────────────────────────────────
+posButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    posButtons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state.position = btn.dataset.pos;
+    render();
+  });
+});
+
+// ─── Rotation slider ─────────────────────────────────────────────────────────
+document.getElementById('rotation-slider').addEventListener('input', e => {
+  state.rotation = parseInt(e.target.value);
+  document.getElementById('rotation-val').textContent = state.rotation + '°';
+  render();
+});
+
+// ─── Texture ─────────────────────────────────────────────────────────────────
+document.getElementById('texture-select').addEventListener('change', e => {
+  state.texture = e.target.value || null;
+  if (state.texture) preloadTexture(state.texture);
+  render();
+});
+
+// ─── Randomize ───────────────────────────────────────────────────────────────
+const POSITIONS = ['top-left','top','top-right','left','center','right','bottom-left','bottom','bottom-right'];
+
+document.getElementById('randomize-btn').addEventListener('click', () => {
+  if (!state.glyphs.length) return;
+
+  // Glyph
+  const glyphIdx = Math.floor(Math.random() * state.glyphs.length);
+  const glyphBtn = glyphGrid.querySelectorAll('.glyph-btn')[glyphIdx];
+  selectGlyph(glyphIdx, glyphBtn);
+
+  // Scale (200–400%)
+  const pct = Math.round(Math.random() * 200 + 200);
+  state.scale = pct / 100;
+  scaleSlider.value = pct;
+  scaleVal.textContent = pct + '%';
+
+  // Position
+  const pos = POSITIONS[Math.floor(Math.random() * POSITIONS.length)];
+  state.position = pos;
+  posButtons.forEach(b => b.classList.toggle('selected', b.dataset.pos === pos));
+
+  // Rotation
+  const rot = Math.floor(Math.random() * 360);
+  state.rotation = rot;
+  document.getElementById('rotation-slider').value = rot;
+  document.getElementById('rotation-val').textContent = rot + '°';
+
+  // Color scheme
+  const schemeIdx = Math.floor(Math.random() * SCHEMES.length);
+  const s = SCHEMES[schemeIdx];
+  state.colorBg = s.bg;
+  state.colorFg = s.fg;
+  document.querySelectorAll('.scheme-btn').forEach((b, i) => b.classList.toggle('selected', i === schemeIdx));
+
+  // Texture (50% chance of none, otherwise random)
+  const textureVal = Math.random() < 0.5 ? '' : TEXTURES[Math.floor(Math.random() * TEXTURES.length)];
+  state.texture = textureVal || null;
+  document.getElementById('texture-select').value = textureVal;
+  if (state.texture) preloadTexture(state.texture);
+
+  render();
+});
+
+// ─── Color schemes ───────────────────────────────────────────────────────────
+function buildSchemes() {
+  SCHEMES.forEach((s, i) => {
+    if (s.section) {
+      const label = document.createElement('div');
+      label.className = 'scheme-section-label' + (s.section.trim() === '' ? ' scheme-section-gap' : '');
+      label.textContent = s.section;
+      schemeGrid.appendChild(label);
+    }
+    const btn = document.createElement('button');
+    btn.className = 'scheme-btn' + (i === 0 ? ' selected' : '');
+    btn.title = s.name;
+    btn.innerHTML = `<div class="scheme-inner">
+      <div class="scheme-top" style="background:${s.bg}"></div>
+      <div class="scheme-bottom" style="background:${s.fg}"></div>
+    </div>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scheme-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.colorBg = s.bg;
+      state.colorFg = s.fg;
+      render();
+    });
+    schemeGrid.appendChild(btn);
+  });
+}
+
+document.getElementById('swap-colors').addEventListener('click', () => {
+  [state.colorBg, state.colorFg] = [state.colorFg, state.colorBg];
+  document.querySelectorAll('.scheme-btn').forEach(b => b.classList.remove('selected'));
+  render();
+});
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+buildSchemes();
+applyAspect();
+try {
+  const bin = atob(FONT_B64);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  opentypeFont = opentype.parse(buf.buffer);
+} catch (e) {
+  console.warn('opentype font parse failed:', e);
+}
+document.fonts.load(`1em "${FONT_FAMILY}"`).then(() => buildGlyphGrid());
+</script>
+</body>
+</html>
