@@ -559,7 +559,7 @@ document.getElementById('export-png').addEventListener('click', async () => {
       texImg.src = dataURI;
       await texImg.decode().catch(() => {});
       ctx.globalAlpha = 0.2;
-      ctx.globalCompositeOperation = 'darken';
+      ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(texImg, 0, 0, W2, H2);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = 'source-over';
@@ -568,7 +568,7 @@ document.getElementById('export-png').addEventListener('click', async () => {
       const tImg = textureImgCache[state.texture];
       if (tImg && tImg.complete && tImg.naturalWidth) {
         ctx.globalAlpha = 0.2;
-        ctx.globalCompositeOperation = 'darken';
+        ctx.globalCompositeOperation = 'source-over';
         ctx.drawImage(tImg, 0, 0, W2, H2);
         ctx.globalAlpha = 1;
         ctx.globalCompositeOperation = 'source-over';
